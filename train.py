@@ -12,11 +12,27 @@ import scipy.sparse
 import h5py
 import math
 import time
+import pycuda.driver as cuda #not necessarily final
+import pycuda.autoinit #not necessarily final
+from pycuda.compiler import SourceModule #not necessarily final
+import cupy
+
+#mod = SourceModule("""
+#__global__ void get_data(int[x][xr])
+#{
+#  const int i = threadIdx.x;
+#  dest[i] = a[i] * b[i];
+#}
+#""")#This is for testing only, not a final implementation
 
 MINIBATCH_SIZE = 2000
 
+#THEANO_FLAGS='device=cuda,floatX=float32'
+#needed to accelerate tensor using CUDA
+
+
 def floatX(x):
-    return numpy.asarray(x, dtype=theano.config.floatX)
+    return cupy.asarray(x, dtype=theano.config.floatX)
 
 def load_data(dir='/mnt/games'):
     for fn in os.listdir(dir):
