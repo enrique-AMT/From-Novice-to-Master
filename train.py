@@ -12,9 +12,6 @@ import scipy.sparse
 import h5py
 import math
 import time
-import pycuda.driver as cuda
-import pycuda.autoinit
-from pycuda.compiler import SourceModule
 
 MINIBATCH_SIZE = 2000
 
