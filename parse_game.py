@@ -63,9 +63,9 @@ def parse_game(g):
         gn = gn.parent
         moves_left += 1
 
-    print len(gns)
+    print (len(gns))
     if len(gns) < 10:
-        print g.end()
+        print (g.end())
 
     gns.pop()
 
@@ -85,11 +85,11 @@ def parse_game(g):
     x_random = bb2array(b_parent, flip=flip)
 
     if moves_left < 3:
-        print moves_left, 'moves left'
-        print 'winner:', y
-        print g.headers
-        print b
-        print 'checkmate:', g.end().board().is_checkmate()
+        print (moves_left, 'moves left')
+        print ('winner:', y)
+        print (g.headers)
+        print (b)
+        print ('checkmate:', g.end().board().is_checkmate())
     
     # print x
     # print x_parent
@@ -113,7 +113,7 @@ def read_all_games(fn_in, fn_out):
         if line + 1 >= size:
             g.flush()
             size = 2 * size + 1
-            print 'resizing to', size
+            print ('resizing to', size)
             [d.resize(size=size, axis=0) for d in (X, Xr, Xp, Y, M)]
 
         X[line] = x

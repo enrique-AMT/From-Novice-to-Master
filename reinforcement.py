@@ -25,7 +25,7 @@ def dump(Ws_s, bs_s):
 def get_params(fns):
     for fn in fns:
         if os.path.exists(fn):
-            print 'loading', fn
+            print ('loading', fn)
             f = open(fn)
             Ws, bs = pickle.load(f)
             return Ws, bs
@@ -107,7 +107,7 @@ def game(f_pred, f_train, learning_rate, momentum=0.9):
             break
 
         if turn == 0 and random.random() < 0.01:
-            print ys
+            print (ys)
 
     if turn == max_turns - 1:
         return
@@ -147,10 +147,10 @@ def main():
         n = n*0.999 + n_t
         l = l*0.999 + l_t*n_t
         c = c*0.999 + c_t*n_t
-        print '%6d %9.5f %9.5f %9.5f' % (i, learning_rate, l / n, c / n)
+        print ('%6d %9.5f %9.5f %9.5f' % (i, learning_rate, l / n, c / n))
 
         if i % 100 == 0:
-            print 'dumping model...'
+            print ('dumping model...')
             dump(Ws_s, bs_s)
 
 

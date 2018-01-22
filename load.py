@@ -5,7 +5,7 @@ rng = numpy.random
 
 def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None, bs=None):
     if Ws is None or bs is None:
-        print 'initializing Ws & bs'
+        print ('initializing Ws & bs')
         if type(n_hidden_units) != list:
             n_hidden_units = [n_hidden_units] * n_hidden_layers
         else:
@@ -44,7 +44,7 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
 
 
 def get_model(Ws_s, bs_s, dropout=False):
-    print 'building expression graph'
+    print ('building expression graph')
     x_s = T.matrix('x')
 
     if type(dropout) != list:
