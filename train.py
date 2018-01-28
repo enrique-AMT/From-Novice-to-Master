@@ -77,9 +77,9 @@ def get_training_model(Ws_s, bs_s, dropout=False, lambd=10.0, kappa=1.0):
 
     # Add regularization terms
     reg = 0
-    for x in Ws_s + bs_s:
-        reg += lambd * (x ** 2).mean()
-
+##    for x in Ws_s + bs_s:
+##        reg += lambd * (x ** 2).mean()
+    reg = sum( lambd * (x ** 2).mean() for x in Ws_s + bs_s )
     loss = loss_a + loss_b + loss_c
     return xc_s, xr_s, xp_s, loss, reg, loss_a, loss_b, loss_c
 
