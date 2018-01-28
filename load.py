@@ -1,11 +1,15 @@
 import numpy
 import theano
 import theano.tensor as T
+
+#GLOBAL RNG 
 rng = numpy.random
 
 def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None, bs=None):
+
     if Ws is None or bs is None:
-        print ('initializing Ws & bs')
+        
+        print('initializing Ws & bs')
         if type(n_hidden_units) != list:
             n_hidden_units = [n_hidden_units] * n_hidden_layers
         else:
@@ -15,13 +19,13 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
         bs = []
 
         def W_values(n_in, n_out):
-            return numpy.asarray(rng.uniform(
-                low=-numpy.sqrt(6. / (n_in + n_out)),
-                high=numpy.sqrt(6. / (n_in + n_out)),
+            return numpy.asarray(rng.uniform(\
+                low=-numpy.sqrt(6. / (n_in + n_out)),\
+                high=numpy.sqrt(6. / (n_in + n_out)),\
                 size=(n_in, n_out)), dtype=theano.config.floatX)
 
-        
-        for l in xrange(n_hidden_layers):
+        # we can parallelize these guys
+        for l in range(n_hidden_layers):
             if l == 0:
                 n_in_2 = n_in
             else:
@@ -36,7 +40,8 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
                 b = floatX(0.)
             Ws.append(W)
             bs.append(b)
-
+    
+    #Might be unnecessary duplicate data here
     Ws_s = [theano.shared(W) for W in Ws]
     bs_s = [theano.shared(b) for b in bs]
 
@@ -44,7 +49,7 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
 
 
 def get_model(Ws_s, bs_s, dropout=False):
-    print ('building expression graph')
+    print('building expression graph')
     x_s = T.matrix('x')
 
     if type(dropout) != list:
@@ -57,13 +62,13 @@ def get_model(Ws_s, bs_s, dropout=False):
         pieces.append(T.eq(x_s, piece))
 
     binary_layer = T.concatenate(pieces, axis=1)
-
+    #Shared Random Number Generator Stream, may want to fix this to shared PQ of Top Moves
     srng = theano.tensor.shared_randomstreams.RandomStreams(
         rng.randint(999999))
 
     last_layer = binary_layer
     n = len(Ws_s)
-    for l in xrange(n - 1):
+    for l in range(n - 1):
         # h = T.tanh(T.dot(last_layer, Ws[l]) + bs[l])
         h = T.dot(last_layer, Ws_s[l]) + bs_s[l]
         h = h * (h > 0)

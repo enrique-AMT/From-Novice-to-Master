@@ -1,19 +1,39 @@
 import load
-import pickle
-import theano
-import theano.tensor as T
 import math
+import pickle
+import string
+
+
 import chess, chess.pgn
 import heapq
 import time
 import re
-import string
-import numpy
-import sunfish
-import pickle
-import random
-import traceback
 
+from memoize import Memoize as memo
+import numpy
+
+import pickle
+import Player
+import random
+import sunfish
+import theano
+import theano.tensor as T
+import traceback
+import dequeue
+
+#This method should use an auxiliary method
+#That is run in parallel by CUDA processors, yielding the int
+#Representing the amount of times it appears at pos i in X amount
+# of games within our provided model
+def best_moves(model, pos=0 , arr=numpy.array()):
+    pq  = dequeue()
+    with open(model.pickle) as f:
+        #read all the moves per game in Pickled Dataset
+        #if move m at pos i
+        #is the most common winning move then,
+        #add to a PQ as move to verify first
+
+    return pq
 
 def get_model_from_pickle(fn):
     f = open(fn)
@@ -42,6 +62,7 @@ def sf2array(pos, flip):
 
 CHECKMATE_SCORE = 1e6
 
+@memo
 def negamax(pos, depth, alpha, beta, color, func):
     moves = []
     X = []
@@ -73,7 +94,8 @@ def negamax(pos, depth, alpha, beta, color, func):
         else:
             # print 'ok will recurse', sunfish.render(move[0]) + sunfish.render(move[1])
             pos_child = pos.move(move)
-            neg_value, _ = negamax(pos_child, depth-1, -beta, -alpha, -color, func)
+            neg_value, _ = negamax(pos_child, depth-1,\
+                                   -beta, -alpha, -color, func)
             value = -neg_value
 
         # value += random.gauss(0, 0.001)
@@ -103,116 +125,16 @@ def create_move(board, crdn):
     return move
 
 
-class Player(object):
-    def move(self, gn_current):
-        raise NotImplementedError()
-
-
-class Computer(Player):
-    def __init__(self, func, maxd=5):
-        self._func = func
-        self._pos = sunfish.Position(sunfish.initial, 0, (True,True), (True,True), 0, 0)
-        self._maxd = maxd
-
-    def move(self, gn_current):
-        assert(gn_current.board().turn == True)
-
-        if gn_current.move is not None:
-            # Apply last_move
-            crdn = str(gn_current.move)
-            move = (119 - sunfish.parse(crdn[0:2]), 119 - sunfish.parse(crdn[2:4]))
-            self._pos = self._pos.move(move)
-
-        # for depth in xrange(1, self._maxd+1):
-        alpha = float('-inf')
-        beta = float('inf')
-
-        depth = self._maxd
-        t0 = time.time()
-        best_value, best_move = negamax(self._pos, depth, alpha, beta, 1, self._func)
-        crdn = sunfish.render(best_move[0]) + sunfish.render(best_move[1])
-        print (depth, best_value, crdn, time.time() - t0)
-
-        self._pos = self._pos.move(best_move)
-        crdn = sunfish.render(best_move[0]) + sunfish.render(best_move[1])
-        move = create_move(gn_current.board(), crdn)
-        
-        gn_new = chess.pgn.GameNode()
-        gn_new.parent = gn_current
-        gn_new.move = move
-
-
-        return gn_new
-
-
-class Human(Player):
-    def move(self, gn_current):
-        bb = gn_current.board()
-
-        print (bb)
-
-        def get_move(move_str):
-            try:
-                move = chess.Move.from_uci(move_str)
-            except:
-                print ('cannot parse')
-                return False
-            if move not in bb.legal_moves:
-                print ('not a legal move')
-                return False
-            else:
-                return move
-
-        while True:
-            print ('your turn:')
-            move = get_move(raw_input())
-            if move:
-                break
-
-        gn_new = chess.pgn.GameNode()
-        gn_new.parent = gn_current
-        gn_new.move = move
-        
-        return gn_new
-
-
-class Sunfish(Player):
-    def __init__(self, secs=1):
-        self._searcher = sunfish.Searcher()
-        self._pos = sunfish.Position(sunfish.initial, 0, (True,True), (True,True), 0, 0)
-        self._secs = secs
-
-    def move(self, gn_current):
-        import sunfish
-
-        assert(gn_current.board().turn == False)
-
-        # Apply last_move
-        crdn = str(gn_current.move)
-        move = (sunfish.parse(crdn[0:2]), sunfish.parse(crdn[2:4]))
-        self._pos = self._pos.move(move)
-
-        t0 = time.time()
-        move, score = self._searcher.search(self._pos, self._secs)
-        print (time.time() - t0, move, score)
-        self._pos = self._pos.move(move)
-
-        crdn = sunfish.render(119-move[0]) + sunfish.render(119 - move[1])
-        move = create_move(gn_current.board(), crdn)
-        
-        gn_new = chess.pgn.GameNode()
-        gn_new.parent = gn_current
-        gn_new.move = move
-
-        return gn_new
 
 def game(func):
     gn_current = chess.pgn.Game()
 
     maxd = random.randint(1, 2) # max depth for deep pink
-    secs = random.random() # max seconds for sunfish
+    #WE want consistency here peeps
+    #secs = random.random() # max seconds for sunfish pre-Alejandro Intervene
+    secs = 5
 
-    print ('maxd %f secs %f' % (maxd, secs))
+    print('maxd {} secs {}'.format(maxd, secs))
 
     player_a = Computer(func, maxd=maxd)
     player_b = Sunfish(secs=secs)
@@ -231,9 +153,9 @@ def game(func):
                 return side + '-exception', times
 
             times[side] += time.time() - t0
-            print ('=========== Player %s: %s' % (side, gn_current.move))
+            print('=========== Player {}: {}'.format(side, gn_current.move))
             s = str(gn_current.board())
-            print (s)
+            print(s)
             if gn_current.board().is_checkmate():
                 return side, times
             elif gn_current.board().is_stalemate():
@@ -248,9 +170,10 @@ def play():
     func = get_model_from_pickle('model.pickle')
     while True:
         side, times = game(func)
-        f = open('stats.txt', 'a')
-        f.write('%s %f %f\n' % (side, times['A'], times['B']))
-        f.close()
+        #f = open('stats.txt', 'a')
+        with open('stats.txt','a') as f:
+            f.write('{} {} {}\n'.format(side, times['A'], times['B']))
+        #f.close()
 
         
 if __name__ == '__main__':
