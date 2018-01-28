@@ -130,9 +130,11 @@ def read_all_games(fn_in, fn_out):
 def read_all_games_2(a):
     return read_all_games(*a)
 
-def parse_dir():
+#This now acts as an argument you can provide,
+#or it defaults to 'games' directory
+def parse_dir(d='games'):
     files = []
-    d = 'games'
+
     for fn_in in os.listdir(d):
         if not fn_in.endswith('.pgn'):
             continue
