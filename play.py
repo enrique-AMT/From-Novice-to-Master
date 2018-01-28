@@ -99,7 +99,7 @@ def create_move(board, crdn):
     # workaround for pawn promotions
     move = chess.Move.from_uci(crdn)
     if board.piece_at(move.from_square).piece_type == chess.PAWN:
-        if int(move.to_square/8) in [0, 7]:
+        if int(move.to_square/8) in range(7):
             move.promotion = chess.QUEEN # always promote to queen
     return move
 
@@ -128,9 +128,9 @@ def game(func):
                 return side + '-exception', times
 
             times[side] += time.time() - t0
-            print ('=========== Player %s: %s' % (side, gn_current.move))
-            s = str(gn_current.board())
-            print (s)
+            print('=========== Player %s: %s' % (side, gn_current.move))
+            print(str(gn_current.board()))
+            
             if gn_current.board().is_checkmate():
                 return side, times
             elif gn_current.board().is_stalemate():

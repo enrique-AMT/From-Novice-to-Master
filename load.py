@@ -1,8 +1,11 @@
+
+import cupy as cp
 import numpy
 import theano
 import theano.tensor as T
-rng = numpy.random
 
+rng = numpy.random
+#Should replace numpy arrays with  cupy arrays
 def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None, bs=None):
     if Ws is None or bs is None:
         print ('initializing Ws & bs')
@@ -11,8 +14,7 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
         else:
             n_hidden_layers = len(n_hidden_units)
 
-        Ws = []
-        bs = []
+        Ws,bs = []
 
         def W_values(n_in, n_out):
             return numpy.asarray(rng.uniform(
@@ -21,7 +23,7 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
                 size=(n_in, n_out)), dtype=theano.config.floatX)
 
         
-        for l in xrange(n_hidden_layers):
+        for l in range(n_hidden_layers):
             if l == 0:
                 n_in_2 = n_in
             else:
@@ -51,10 +53,10 @@ def get_model(Ws_s, bs_s, dropout=False):
         dropout = [dropout] * len(Ws_s)
 
     # Convert input into a 12 * 64 list
-    pieces = []
-    for piece in [1,2,3,4,5,6, 8,9,10,11,12,13]:
+    pieces = [T.eq(x_s, piece) for piece in [1,2,3,4,5,6, 8,9,10,11,12,13]]
+    #for piece in [1,2,3,4,5,6, 8,9,10,11,12,13]:
         # pieces.append((x_s <= piece and x_s >= piece).astype(theano.config.floatX))
-        pieces.append(T.eq(x_s, piece))
+        #pieces.append(T.eq(x_s, piece))
 
     binary_layer = T.concatenate(pieces, axis=1)
 
@@ -63,7 +65,7 @@ def get_model(Ws_s, bs_s, dropout=False):
 
     last_layer = binary_layer
     n = len(Ws_s)
-    for l in xrange(n - 1):
+    for l in range(n - 1):
         # h = T.tanh(T.dot(last_layer, Ws[l]) + bs[l])
         h = T.dot(last_layer, Ws_s[l]) + bs_s[l]
         h = h * (h > 0)
