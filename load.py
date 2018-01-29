@@ -1,5 +1,5 @@
 
-#import cupy as cp
+import cupy as cp
 import numpy
 import theano
 import theano.tensor as T
@@ -19,7 +19,7 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
         bs = []
 
         def W_values(n_in, n_out):
-            return numpy.asarray(rng.uniform(
+            return cp.asarray(rng.uniform(
                 low=-numpy.sqrt(6. / (n_in + n_out)),
                 high=numpy.sqrt(6. / (n_in + n_out)),
                 size=(n_in, n_out)), dtype=theano.config.floatX)
@@ -34,9 +34,9 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
                 n_out_2 = n_hidden_units[l]
                 W = W_values(n_in_2, n_out_2)
                 gamma = 0.1 # initialize it to slightly positive so the derivative exists
-                b = numpy.ones(n_out_2, dtype=theano.config.floatX) * gamma
+                b = cp.ones(n_out_2, dtype=theano.config.floatX) * gamma
             else:
-                W = numpy.zeros(n_in_2, dtype=theano.config.floatX)
+                W = cp.zeros(n_in_2, dtype=theano.config.floatX)
                 b = floatX(0.)
             Ws.append(W)
             bs.append(b)

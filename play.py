@@ -17,6 +17,7 @@ import traceback
 from sunfish import Position
 from memoize import Memoize as memo
 
+#File is never closed here, may cause memory leak
 def get_model_from_pickle(fn):
     f = open(fn, 'rb')
     Ws, bs = pickle.load(f)

@@ -1,5 +1,6 @@
 import load
 import numpy
+import cupy as cp
 import theano
 import theano.tensor as T
 import os
@@ -16,7 +17,7 @@ import time
 MINIBATCH_SIZE = 2000
 
 def floatX(x):
-    return numpy.asarray(x, dtype=theano.config.floatX)
+    return cp.asarray(x, dtype=theano.config.floatX)
 
 def load_data(dir='games'):
     for fn in os.listdir(dir):
@@ -90,7 +91,7 @@ def nesterov_updates(loss, all_params, learn_rate, momentum):
     for param_i, grad_i in zip(all_params, all_grads):
         # generate a momentum parameter
         mparam_i = theano.shared(
-            numpy.array(param_i.get_value()*0., dtype=theano.config.floatX))
+            cp.array(param_i.get_value()*0., dtype=theano.config.floatX))
         v = momentum * mparam_i - learn_rate * grad_i
         w = param_i + momentum * v - learn_rate * grad_i
         updates.append((param_i, w))
@@ -161,11 +162,14 @@ def train():
                 best_test_loss = test_loss
 
                 print ('dumping pickled model')
-                f = open('model.pickle', 'w')
+
                 def values(zs):
                     return [z.get_value(borrow=True) for z in zs]
-                pickle.dump((values(Ws_s), values(bs_s)), f)
-                f.close()
+                with open('cupy_model.pickle', 'w') as f:
+                    pickle.dump((values(Ws_s), values(bs_s)), f)
+                
+
+
 
 
 if __name__ == '__main__':

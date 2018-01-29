@@ -18,11 +18,12 @@ import math
 import cupy as cp
 
 def dump(Ws_s, bs_s):
-    f = open('model_reinforcement.pickle', 'w')
     def values(zs):
         return [z.get_value(borrow=True) for z in zs]
-    pickle.dump((values(Ws_s), values(bs_s)), f)
-
+    
+    with open('cupy_model_reinforcement.pickle','w') as f:
+        pickle.dump((values(Ws_s), values(bs_s)),f)
+    return
 
 def get_params(fns):
     for fn in fns:
@@ -120,16 +121,19 @@ def game(f_pred, f_train, learning_rate, momentum=0.9):
     # If turn is odd, all odd (white) boards are losses
     win = (turn % 2) # 0 = white, 1 = black
 
-    X = numpy.array([x for t, x in data], dtype=theano.config.floatX)
-    Y = numpy.array([(t ^ win) for t, x in data], dtype=theano.config.floatX)
+    #X = numpy.array([x for t, x in data], dtype=theano.config.floatX)
+    #Y = numpy.array([(t ^ win) for t, x in data], dtype=theano.config.floatX)
 
+    X = cp.array([x for t, x in data], dtype=theano.config.floatX)
+    Y = cp.array([(t ^ win) for t, x in data], dtype=theano.config.floatX)
+    
     loss, frac_correct = f_train(X, Y, learning_rate, momentum)
 
     return len(data), loss, frac_correct
 
 
 def main():
-    Ws, bs = get_params(['model_reinforcement.pickle', 'model.pickle'])
+    Ws, bs = get_params(['cupy_model_reinforcement.pickle', 'cupy_model.pickle'])
     Ws_s, bs_s = load.get_parameters(Ws=Ws, bs=bs)
     f_pred = get_predict(Ws_s, bs_s)
     f_train = get_update(Ws_s, bs_s)
