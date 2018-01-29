@@ -112,7 +112,7 @@ def game(func):
     print ('maxd %f secs %f' % (maxd, secs))
 
     player_a = Computer(func, maxd=maxd)
-    player_b = Sunfish(secs=secs)
+    player_b = Sunfish_AI(secs=secs)
 
     times = {'A': 0.0, 'B': 0.0}
     

@@ -11,8 +11,7 @@ class Player(object):
 class Computer(Player):
     def __init__(self, func, maxd=5):
         self._func = func
-        self._pos = sunfish.Position(sunfish.initial, 0,\
-                                     (True,True), (True,True), 0, 0)
+        self._pos = sunfish.Position(sunfish.initial, 0,(True,True), (True,True), 0, 0)
         self._maxd = maxd
 
     def move(self, gn_current):
@@ -31,8 +30,7 @@ class Computer(Player):
 
         depth = self._maxd
         t0 = time.time()
-        best_value, best_move = negamax(self._pos, depth, alpha,\
-                                        beta, 1, self._func)
+        best_value, best_move = negamax(self._pos, depth, alpha,beta, 1, self._func)
         crdn = sunfish.render(best_move[0]) + sunfish.render(best_move[1])
         print(depth, best_value, crdn, time.time() - t0)
 
@@ -79,11 +77,10 @@ class Human(Player):
         return gn_new
 
 
-class Sunfish(Player):
+class Sunfish_AI(Player):
     def __init__(self, secs=1):
         self._searcher = sunfish.Searcher()
-        self._pos = sunfish.Position(sunfish.initial, 0,\
-                                     (True,True), (True,True), 0, 0)
+        self._pos = sunfish.Position(sunfish.initial, 0,(True,True), (True,True), 0, 0)
         self._secs = secs
 
     def move(self, gn_current):
