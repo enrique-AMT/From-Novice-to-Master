@@ -1,5 +1,5 @@
 
-import cupy as cp
+#import cupy as cp
 import numpy
 import theano
 import theano.tensor as T
