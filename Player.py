@@ -1,6 +1,6 @@
 import chess
 import sunfish
-
+from sunfish import Position
 #ABSTRACT CLASS
 class Player(object):
     def move(self, gn_current):

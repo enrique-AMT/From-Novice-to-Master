@@ -14,6 +14,7 @@ import Player
 import pickle
 import random
 import traceback
+from sunfish import Position
 from memoize import Memoize as memo
 
 def get_model_from_pickle(fn):
