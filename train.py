@@ -48,7 +48,7 @@ def get_data(series=['x', 'xr']):
 
     data = [stack(d) for d in data]
 
-    test_size = 10000.0 / len(data[0])
+    test_size = int(10000.0 / len(data[0]))
     print ('Splitting', len(data[0]), 'entries into train/test set')
     data = train_test_split(*data, test_size=test_size)
 
@@ -123,7 +123,7 @@ def get_function(Ws_s, bs_s, dropout=False, update=False):
 def train():
     Xc_train, Xc_test, Xr_train, Xr_test, Xp_train, Xp_test = get_data(['x', 'xr', 'xp'])
     for board in [Xc_train[0], Xp_train[0]]:
-        for row in xrange(8):
+        for row in range(8):
             print (' '.join('%2d' % x for x in board[(row*8):((row+1)*8)]))
         print
 
