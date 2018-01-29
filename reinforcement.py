@@ -14,6 +14,8 @@ import os
 import time
 import math
 
+#Will not work on my pc so I cant test it
+import cupy as cp
 
 def dump(Ws_s, bs_s):
     f = open('model_reinforcement.pickle', 'w')
@@ -83,7 +85,7 @@ def game(f_pred, f_train, learning_rate, momentum=0.9):
 
     max_turns = 100
 
-    for turn in xrange(max_turns):
+    for turn in range(max_turns):
         # Generate all possible moves
         Xs = []
         new_poss = []

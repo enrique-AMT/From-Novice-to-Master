@@ -1,11 +1,11 @@
-def Memoize(fn , *args=None, **kwargs=None):
+def Memoize(fn):
     di = dict()
 
-    def wrapper():
+    def wrapper(x):
         
         if fn not in di:
-            di[fn]= fn(args,kwargs)
-        else:
-            return di[fn]
+            di[x]= fn(x)
+            
+        return di[fn]
 
-    return wrapper()
+    return wrapper
