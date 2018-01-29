@@ -4,6 +4,7 @@ import numpy
 import theano
 import theano.tensor as T
 
+floatX=float
 rng = numpy.random
 #Should replace numpy arrays with  cupy arrays
 def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None, bs=None):
@@ -14,7 +15,8 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
         else:
             n_hidden_layers = len(n_hidden_units)
 
-        Ws,bs = []
+        Ws = []
+        bs = []
 
         def W_values(n_in, n_out):
             return numpy.asarray(rng.uniform(
