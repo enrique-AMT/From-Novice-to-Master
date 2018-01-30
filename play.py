@@ -249,7 +249,7 @@ def play():
     while True:
         side, times = game(func)
         f = open('stats.txt', 'a')
-        f.write('%s %f %f\n' % (side, times['A'], times['B']))
+        f.write('Winner: %s | A r/t: %f s B r/t: %f s\n' % (side, times['A'], times['B']))
         f.close()
 
         
