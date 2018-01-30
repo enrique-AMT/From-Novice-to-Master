@@ -1,6 +1,6 @@
 import chess, chess.pgn
 import numpy
-import cupy as cp
+
 import sys
 import os
 import multiprocessing
@@ -26,8 +26,8 @@ def read_games(fn):
 
 
 def bb2array(b, flip=False):
-    #x = numpy.zeros(64, dtype=numpy.int8)
-    x = cp.zeros(64,dtype=cp.int8)
+    x = numpy.zeros(64, dtype=numpy.int8)
+  
     for pos, piece in enumerate(b.pieces):
         if piece != 0:
             color = int(bool(b.occupied_co[chess.BLACK] & chess.BB_SQUARES[pos]))
